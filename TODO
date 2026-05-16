@@ -1,0 +1,110 @@
+App.js
+import React, { useState } from "react";
+import TodoInput from "./TodoInput";
+import TodoList from "./TodoList";
+import "./style.css";
+
+function App() {
+  const [todos, setTodos] = useState([]);
+  const [editIndex, setEditIndex] = useState(null);
+  const [editText, setEditText] = useState("");
+
+  function addTodo(text) {
+    if (editIndex === null) {
+      setTodos([...todos, text]);
+    } else {
+      let newTodos = [...todos];
+      newTodos[editIndex] = text;
+      setTodos(newTodos);
+      setEditIndex(null);
+      setEditText("");
+    }
+  }
+
+  function deleteTodo(index) {
+    let newTodos = todos.filter((todo, i) => i !== index);
+    setTodos(newTodos);
+  }
+
+  function editTodo(index) {
+    setEditIndex(index);
+    setEditText(todos[index]);
+  }
+
+  return (
+    <div className="box">
+      <h2>TODO Application</h2>
+
+      <TodoInput 
+        addTodo={addTodo}
+        editText={editText}
+        editIndex={editIndex}
+      />
+
+      <TodoList 
+        todos={todos}
+        deleteTodo={deleteTodo}
+        editTodo={editTodo}
+      />
+    </div>
+  );
+}
+
+export default App;
+TodoInput.js
+import React, { useState, useEffect } from "react";
+
+function TodoInput({ addTodo, editText, editIndex }) {
+  const [task, setTask] = useState("");
+
+  useEffect(() => {
+    setTask(editText);
+  }, [editText]);
+
+  function handleAdd() {
+    if (task === "") {
+      alert("Enter task");
+    } else {
+      addTodo(task);
+      setTask("");
+    }
+  }
+
+  return (
+    <div>
+      <input
+        type="text"
+        placeholder="Enter Task"
+        value={task}
+        onChange={(e) => setTask(e.target.value)}
+      />
+
+      <button onClick={handleAdd}>
+        {editIndex === null ? "Add" : "Update"}
+      </button>
+    </div>
+  );
+}
+
+export default TodoInput;
+TodoList.js
+import React from "react";
+
+function TodoList({ todos, deleteTodo, editTodo }) {
+  return (
+    <div>
+      {todos.map((todo, index) => (
+        <div className="todo" key={index}>
+          <span>{todo}</span>
+
+          <div>
+            <button onClick={() => editTodo(index)}>Edit</button>
+            <button onClick={() => deleteTodo(index)}>Delete</button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default TodoList;
